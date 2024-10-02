@@ -1,70 +1,65 @@
-🚀 Astra's Dotfiles
+# 🚀 Astra's Dotfiles
 
-Welcome to my Dotfiles repository! This is where I store the configuration files and scripts that shape my personalized Linux environment, optimized for Wayland with Sway and various custom setups. Feel free to explore, adapt, and contribute!
-🛠️ Setup
+Welcome to my **Dotfiles** repository! This is where I store the configuration files and scripts that shape my personalized Linux environment, optimized for Wayland with Sway and various custom setups. Feel free to explore, adapt, and contribute!
 
-These Dotfiles are managed using GNU Stow to keep everything modular and organized. To install, clone this repository and use stow to create symlinks for the configurations you need.
-Prerequisites
+## 🛠️ Setup
 
-Make sure you have stow installed:
+These Dotfiles are managed using **GNU Stow** to keep everything modular and organized. To install, clone this repository and use `stow` to create symlinks for the configurations you need.
 
-bash
+### Prerequisites
 
+Make sure you have `stow` installed:
+
+```bash
 sudo pacman -S stow
+```
 
-Installation
+### Installation
 
-    Clone the repository to your home directory:
+1. Clone the repository to your home directory:
 
-    bash
+   ```bash
+   git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
+   cd ~/dotfiles/Config
+   ```
 
-git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
-cd ~/dotfiles
+2. Stow all of the configurations. :
 
-Stow the configuration you want. For example, to set up the Sway configuration:
+   ```bash
+   stow -v -t ~
+   ```
 
-bash
+3. Or, only stow some Config files:
 
-stow -t ~ sway
+   ```bash
+   stow -t ~ kitty
+   stow -t ~ rofi
+   stow -t ~ fastfetch
+   ```
 
-Repeat for other tools, like:
-
-bash
-
-    stow -t ~ kitty
-    stow -t ~ rofi
-    stow -t ~ fastfetch
-
-📁 What's Inside
+## 📁 What's Inside
 
 Here’s a breakdown of some of the key components:
 
-    Sway: My Sway configuration for a tiling window manager on Wayland.
-    Kitty: A fast, feature-rich terminal emulator, with a customized theme.
-    Fastfetch: Fetch-like system info displayed in my terminal prompt.
-    Rofi: A launcher with a custom power menu and application switcher.
+- **Sway**: My Sway configuration for a tiling window manager on Wayland.
+- **Kitty**: A fast, feature-rich terminal emulator, with a customized theme.
+- **Fastfetch**: Fetch-like system info displayed in my terminal prompt.
+- **Rofi**: A launcher with a custom power menu and application switcher.
+- **nvim**: My Neovim configuration, a highly customizable, fast, and powerful text editor.
+- **dunst**: Lightweight notification daemon. This configuration manages system notifications
+- **waybar**: A customizable status bar for Wayland.
+- **starship**: A minimal, fast, and highly customizable shell prompt that works in any shell.
 
-And much more... Check the individual folders for additional configurations.
-🧩 Features
+## 🧩 Features
 
-    Modular Configurations: All configs are organized into separate folders and can be applied independently.
-    Custom Themes: I've included several custom themes, including terminal and Waybar styles, to make my setup visually cohesive.
-    Powerful Scripts: A set of handy shell scripts to streamline workflows (like power management, Wi-Fi menus, and more).
+- **Modular Configurations**: All configs are organized into separate folders and can be applied independently.
+- **Custom Themes**: I've included several custom themes, including terminal and Waybar styles, to make my setup visually cohesive.
+- **Powerful Scripts**: A set of handy shell scripts to streamline workflows (like power management, Wi-Fi menus, and more).
 
-🔧 Customizations
-
-I use these configurations on an Arch Linux setup with Wayland and Sway. Many scripts and configurations assume this environment, but they can be adapted to other setups if needed.
-
-Here are some of the tools I'm using:
-
-    Waybar: My custom status bar configuration.
-    Rofi: A customized Rofi with a power menu and extended options.
-    Sway: Lightweight, tiling window manager on Wayland.
-    Mako: For managing notifications (since I've switched from swaync).
-
-🤝 Contributing
+## 🤝 Contributing
 
 Feel free to open an issue or submit a pull request if you’d like to improve or share ideas for my Dotfiles.
-📜 License
 
-This project is open-source and available under the MIT License.
+## 📜 License
+
+This project is open-source and available under the [MIT License](LICENSE).
