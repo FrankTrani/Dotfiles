@@ -1,0 +1,213 @@
+// -*- mode: json -*-
+[
+  
+  {
+    "layer": "top",
+    "position": "top",
+    "modules-left": [
+      "user",
+      "clock#1",
+      "clock#2",
+      "custom/news",
+      "custom/weather",
+      "mpris"
+    ],
+    "modules-center": [],
+    "modules-right": [
+      "network",
+      "battery",
+      "bluetooth",
+      "pulseaudio",
+      "custom/brightness",
+      "custom/power",
+      "privacy",
+      "tray"
+    ],
+    "user": {
+      "format": " {user}",
+      "icon": true
+    },
+    "clock#1": {
+      "format": "󰃭 {:%A, %B %Od}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "mode": "month",
+        "mode-mon-col": 3,
+        "weeks-pos": "right",
+        "on-scroll": 1,
+        "format": {
+          "months": "<span color='#ffead3'><b>{}</b></span>",
+          "days": "<span color='#ecc6d9'><b>{}</b></span>",
+          "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+          "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+          "today": "<span color='#ff6699'><b><u>{}</u></b></span>"
+        }
+      },
+      "actions": {
+        "on-click": "shift_up",
+        "on-click-right": "shift_down",
+        "on-click-middle": "mode"
+      }
+    },
+    "clock#2": {
+      "format": "󰥔 {:%I:%M %p}",
+      "tooltip-format": "{:%F at %T in %Z (UTC%Ez)}"
+    },
+    "mpris": {
+      "status-icons": {
+        "paused": "󰏤",
+        "stopped": "󰓛"
+      },
+      "player-icons": {
+        "default": "󰎆",
+        "spotify": "󰓇",
+        "firefox": "󰈹",
+        "firefox-devedition": "󰈹",
+        "QMPlay2": "󰐌"
+      },
+      "dynamic-order": [
+        "title",
+        "artist",
+        "album",
+        "position",
+        "length"
+      ],
+      "dynamic-importance-order": [
+        "title",
+        "position",
+        "length",
+        "artist",
+        "album"
+      ],
+      "title-len": 35,
+      "artist-len": 25,
+      "album-len": 20,
+      "dynamic-len": 50,
+      "format": "{player_icon} {dynamic}",
+      "format-paused": "{status_icon} {dynamic}"
+    },
+    "network": {
+      "format": "{ifname}",
+      "format-wifi": "{icon} {essid}",
+      "format-icons": [
+        "󰤟",
+        "󰤢",
+        "󰤥",
+        "󰤨"
+      ],
+      "format-ethernet": "󱎔 {ifname}",
+      "format-linked": "󰌷 {ifname}",
+      "format-disconnected": "󰪎",
+      "tooltip-format": "{ifname} via {gwaddr}",
+      "tooltip-format-wifi": "Connected to {essid} ({signalStrength}󰏰 Strength) over {ifname} via {gwaddr}",
+      "tooltip-format-ethernet": "󱎔 {ifname}",
+      "tooltip-disconnected": "Disconnected",
+      "on-click": "~/.config/rofi-wifi-menu/rofi-wifi-menu.sh"
+    },
+    "pulseaudio": {
+      "format": "{icon} {volume:2}󰏰",
+      "format-bluetooth": "{icon}  {volume}󰏰",
+      "format-muted": "󰝟",
+      "format-icons": {
+        "headphone": "󰋋",
+        "hands-free": "󰋋",
+        "headset": "󰋋",
+        "phone": "",
+        "portable": "",
+        "car": "",
+        "default": [
+          "󰖀",
+          "󰕾"
+        ]
+      },
+      "scroll-step": 5,
+      "on-click": "pamixer -t",
+      "on-click-right": "pavucontrol"
+    },
+    "bluetooth": {
+      "format": "󰂯",
+      "format-disabled": "󰂲",
+      "format-off": "󰂲",
+      "format-connected": "󰂱",
+      "format-connected-battery": "󰂱 {device_battery_percentage}󰏰",
+      "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+      "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+      "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+      "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+      "on-click": "rofi-bluetooth",
+      "on-click-right": "rfkill toggle bluetooth"
+    },
+    "custom/power": {
+      "format": "𓃑",
+      "on-click": "/home/astra/.config/rofi/powermenu/type-5/powermenu.sh"
+    },
+    "battery": {
+      "states": {
+        "warning": 30,
+        "critical": 15
+      },
+      "format": "{icon} {capacity}󰏰",
+      "format-charging": "{icon} {capacity}󰏰",
+      "format-icons": {
+        "charging": [
+          "󰢜",
+          "󰂆",
+          "󰂇",
+          "󰂈",
+          "󰢝",
+          "󰂉",
+          "󰢞",
+          "󰂊",
+          "󰂋",
+          "󰂅"
+        ],
+        "default": [
+          "󰁺",
+          "󰁻",
+          "󰁼",
+          "󰁽",
+          "󰁾",
+          "󰁿",
+          "󰂀",
+          "󰂁",
+          "󰂂",
+          "󰁹"
+        ]
+      }
+    },
+    "tray": {
+      "icon-size": 25,
+      "spacing": 5,
+      "show-passive-items": true
+    },
+    "privacy": {
+      "icon-spacing": 4,
+      "icon-size": 20,
+      "transition-duration": 200,
+      "modules": [
+        {
+          "type": "screenshare",
+          "tooltip": true,
+          "tooltip-icon-size": 24
+        },
+        {
+          "type": "audio-in",
+          "tooltip": true,
+          "tooltip-icon-size": 24
+        }
+      ]
+    },
+    "custom/weather": {
+      "exec": "nu ~/.config/waybar/custom_modules/weather.nu",
+      "on-click": "xdg-open https://wttr.in/",
+      "return-type": "json",
+      "format": "{}",
+      "interval": 600
+    },
+    "custom/brightness": {
+      "format": "{}",
+      "exec": "nu ~/.config/waybar/custom_modules/brightness.nu",
+      "signal": 10
+    }
+  }
+]
