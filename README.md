@@ -20,21 +20,13 @@ sudo pacman -S stow
 
    ```bash
    git clone https://github.com/FrankTrani/dotfiles.git ~/dotfiles
-   cd ~/dotfiles/Config
+   cd ~/Dotfiles
    ```
 
-2. Stow all of the configurations. :
+2. Run install command. :
 
    ```bash
-   stow -v -t ~
-   ```
-
-3. Or, only stow some Config files:
-
-   ```bash
-   stow -t ~ kitty
-   stow -t ~ rofi
-   stow -t ~ fastfetch
+   scripts/run.sh
    ```
 
 ## 📁 What's Inside
