@@ -16,9 +16,9 @@ show_menu() {
 # Function to perform a fresh install
 fresh_install() {
   echo "Running Fresh Install..."
-  sudo ./install.sh
-  sudo ./sway.sh
-  ./set_fonts.sh
+  sudo source $base_dir/scripts/install.sh
+  sudo source $base_dir/scripts/sway.sh
+  source $base_dir/scripts/set_fonts.sh
   echo "Fresh install completed."
 }
 
