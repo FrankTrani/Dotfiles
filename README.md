@@ -28,6 +28,7 @@ sudo pacman -S stow
    ```bash
    scripts/run.sh
    ```
+   #### The scripts are still a work in progress and might not work as expected
 
 ## 📁 What's Inside
 
@@ -54,4 +55,4 @@ Feel free to open an issue or submit a pull request if you’d like to improve o
 
 ## 📜 License
 
-This project is open-source and available under the [MIT License](LICENSE).
+This project is open-source and available under the [GNU GENERAL PUBLIC LICENSE](LICENSE).
