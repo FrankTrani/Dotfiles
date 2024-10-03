@@ -19,5 +19,5 @@ source "$base_dir/scripts/install_packages.sh"
 
 
 # Stow files
-cd "$base_dir/Config"
+cd "$base_dir/config"
 stow -v -t ~ .
