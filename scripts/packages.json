@@ -10,7 +10,6 @@
       "kvantum-qt5",
       "base-devel",
       "qt5ct",
-      "sway",
       "slurp",
       "qt5-wayland",
       "bluez-utils",
@@ -48,7 +47,8 @@
     "aur_packages": [
       "brave-bin",
       "zen-browser-avx2-bin",
-      "visual-studio-code-bin"
+      "visual-studio-code-bin",
+      "swayfx"
     ]
   }
   
