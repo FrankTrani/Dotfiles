@@ -16,8 +16,8 @@ show_menu() {
 # Function to perform a fresh install
 fresh_install() {
   echo "Running Fresh Install..."
-  sudo source $base_dir/scripts/install.sh
-  sudo source $base_dir/scripts/sway.sh
+  source $base_dir/scripts/install.sh
+  source $base_dir/scripts/sway.sh
   source $base_dir/scripts/set_fonts.sh
   echo "Fresh install completed."
 }
@@ -25,7 +25,7 @@ fresh_install() {
 # Function to update the system and restow
 update_and_restow() {
   echo "Updating the system..."
-  sudo yay -Syu
+  yay -Syu
   echo "Restowing configuration files..."
   ./restow.sh
 }
@@ -41,7 +41,7 @@ while true; do
       ;;
     2)
       echo "Running install.sh..."
-      sudo source $base_dir/scripts/install.sh
+      source $base_dir/scripts/install.sh
       ;;
     3)
       echo "Running set_fonts.sh..."
@@ -49,7 +49,7 @@ while true; do
       ;;
     4)
       echo "Running sway.sh..."
-      sudo source $base_dir/scripts/sway.sh
+      source $base_dir/scripts/sway.sh
       ;;
     5)
       update_and_restow

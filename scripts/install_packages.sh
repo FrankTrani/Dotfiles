@@ -18,7 +18,7 @@ fi
 pacman_packages=$(jq -r '.pacman_packages[]' "$json_file")
 
 echo "Installing pacman packages..."
-sudo pacman -S --needed $pacman_packages
+pacman -S --needed $pacman_packages
 
 # Check if yay is installed
 if ! command -v yay &> /dev/null; then
