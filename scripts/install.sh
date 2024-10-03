@@ -6,7 +6,7 @@ base_dir="$(realpath "$(dirname $0)/..")"
 if ! command -v yay &> /dev/null
 then
   echo "Yay is not installed. Installing now..."
-  pacman -S --needed git base-devel
+  sudo pacman -S --needed git base-devel
   git clone https://aur.archlinux.org/yay.git ~/yay
   cd ~/yay
   makepkg -si

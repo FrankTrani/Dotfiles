@@ -27,7 +27,7 @@ update_and_restow() {
   echo "Updating the system..."
   yay -Syu
   echo "Restowing configuration files..."
-  ./restow.sh
+  source $base_dir/scripts/restow.sh
 }
 
 # Main program loop
