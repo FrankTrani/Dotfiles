@@ -2,7 +2,7 @@
 
 base_dir="$(realpath "$(dirname $0)/..")"
 
-json_file="$base_dir/packages.json"
+json_file="$base_dir/scripts/packages.json"
 
 if ! command -v jq &> /dev/null; then
   echo "jq is not installed. Installing now..."
