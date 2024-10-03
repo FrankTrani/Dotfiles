@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+base_dir="$(realpath "$(dirname $0)/..")"
+
 # Function to display the menu
 show_menu() {
   echo "Please choose an option:"
@@ -39,15 +41,15 @@ while true; do
       ;;
     2)
       echo "Running install.sh..."
-      sudo ./install.sh
+      sudo source $base_dir/scripts/install.sh
       ;;
     3)
       echo "Running set_fonts.sh..."
-      ./set_fonts.sh
+      source $base_dir/scripts/set_fonts.sh
       ;;
     4)
       echo "Running sway.sh..."
-      sudo ./sway.sh
+      sudo source $base_dir/scripts/sway.sh
       ;;
     5)
       update_and_restow
