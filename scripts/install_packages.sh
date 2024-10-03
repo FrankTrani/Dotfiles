@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-base_dir="$(dirname $0)"
+base_dir="$(realpath "$(dirname $0)/..")"
 
 json_file="$base_dir/packages.json"
 

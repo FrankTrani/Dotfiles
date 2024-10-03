@@ -5,7 +5,7 @@ if [[ "$EUID" != 0 ]] ; then
   exit
 fi
 
-base_dir="$(dirname $0)/.."
+base_dir="$(realpath "$(dirname $0)/..")"
 
 cp "$base_dir/root-cfg/sway-exec" "/home/astra/.config/sway/swaylaunch/launch.sh"
 cp "$base_dir/root-cfg/sway.desktop" "/usr/share/wayland-sessions/sway.desktop"

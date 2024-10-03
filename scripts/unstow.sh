@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-basedir="$(dirname $0)/.."
+base_dir="$(realpath "$(dirname $0)/..")"
 cd "$basedir"
 stow -v -t ~ -D config/

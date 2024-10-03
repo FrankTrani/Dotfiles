@@ -243,7 +243,7 @@ bindsym XF86MonBrightnessUp exec brightnessctl set +10% && pkill -RTMIN+10 wayba
 # Brightness down
 bindsym XF86MonBrightnessDown exec brightnessctl set 10%- && pkill -RTMIN+10 waybar
 
-exec "swaymsg splith, exec zen"
+exec "swaymsg splith, exec zen-browser"
 exec "swaymsg focus right"
 exec "sleep 2 && swaymsg exec kitty"
 exec "sleep 3 && swaymsg splitv; exec kitty --class floating -- bash -c 'bpytop' "

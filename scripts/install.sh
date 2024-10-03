@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-base_dir="$(dirname $0)/.."
+base_dir="$(realpath "$(dirname $0)/..")"
 
 # Check for and intall yay
 if ! command -v yay &> /dev/null
