@@ -32,12 +32,15 @@ set $menu dmenu_path | wmenu | xargs swaymsg exec --
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
 #
 # You can get the names of your outputs by running: swaymsg -t get_outputs
+ include ~/.config/sway/outputs
 
+#output HDMI-A-1 resolution 1920x1080@239.761Hz
 ### Idle configuration
 exec swayidle -w \
     timeout 1800 'swaylock -f' \
     timeout 1805 'swaymsg "output * power off"' \
-    resume 'swaymsg "output * power on"'
+    resume 'swaymsg "output * power on"' \
+    before-sleep 'swaylock -f'
 
 set $lockman exec bash ~/.config/sway/lockman.sh
 bindsym $mod+l exec $lockman
@@ -223,8 +226,7 @@ input type:keyboard xkb_numlock enabled
 
 output "*" bg ~/wallpapers/n7fobiqluln61.jpg fill
 
-blur enabled
-corner_radius 20
+
 gaps inner 8
 gaps outer 4
 
@@ -246,6 +248,5 @@ bindsym XF86MonBrightnessDown exec brightnessctl set 10%- && pkill -RTMIN+10 way
 exec "swaymsg splith, exec zen-browser"
 exec "swaymsg focus right"
 exec "sleep 2 && swaymsg exec kitty"
-exec "sleep 3 && swaymsg splitv; exec kitty --class floating -- bash -c 'bpytop' "
 include /etc/sway/config.di*
 exec dunst

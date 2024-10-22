@@ -125,7 +125,7 @@ echo "It has been $(tput bold)$time_since hour$([ $time_since -ne 1 ] && echo s)
 if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
 
 alias src="clear && source ~/.zshrc"
-alias vim='nvim'
+alias e='nvim'
 alias cls='clear'
 alias bruteforce='genact -m bruteforce'
 alias sudoedit="sudo -e $1"
@@ -140,4 +140,8 @@ alias weather='curl wttr.in'
 alias image="timg $1"
 export XCURSOR_THEME=Adwaita
 export XCURSOR_SIZE=24
-
+alias bat="upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E 'percentage|state|time to full'"
+export PATH=$PATH:/home/astra/.local/share/gem/ruby/3.2.0/bin
+export GEM_HOME="$HOME/gems"
+export PATH="$HOME/gems/bin:$PATH"
+export PATH=$HOME/.local/share/gem/ruby/3.3.0/bin:$PATH
