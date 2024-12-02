@@ -21,7 +21,6 @@
     "memory",
     "swap",
     "localip",
-    "break",
-    "colors"
+    "break"
   ]
 }

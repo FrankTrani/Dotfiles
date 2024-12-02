@@ -113,7 +113,7 @@ export SUDO_EDITOR="nvim"
 export EDITOR=nvim
 echo ""
 echo ""
-fastfetch
+fastfetch --logo archcraft
 echo ""
 echo ""
 quote | colorizer blue bold
@@ -138,6 +138,7 @@ alias dn='cd ~/Downloads/'
 alias spotify='spt'
 alias weather='curl wttr.in'
 alias image="timg $1"
+alias website="ssh astra@5.161.57.83"
 export XCURSOR_THEME=Adwaita
 export XCURSOR_SIZE=24
 alias bat="upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E 'percentage|state|time to full'"
@@ -145,3 +146,9 @@ export PATH=$PATH:/home/astra/.local/share/gem/ruby/3.2.0/bin
 export GEM_HOME="$HOME/gems"
 export PATH="$HOME/gems/bin:$PATH"
 export PATH=$HOME/.local/share/gem/ruby/3.3.0/bin:$PATH
+export PATH=/opt/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+
+export CUDA_DIR=/opt/cuda
+export XLA_FLAGS=--xla_gpu_cuda_data_dir=$CUDA_DIR/nvvm/libdevice
+

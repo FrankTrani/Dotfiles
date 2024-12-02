@@ -250,3 +250,6 @@ exec "swaymsg focus right"
 exec "sleep 2 && swaymsg exec kitty"
 include /etc/sway/config.di*
 exec dunst
+exec "/usr/lib/polkit-kde-authentication-agent-1"
+font "JetBrainsMonoNerdFont" regular 11
+exec "systemctl start docker"
