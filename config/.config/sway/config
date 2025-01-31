@@ -118,9 +118,7 @@ input type:touchpad {
     bindsym $mod+Shift+$left move left
     bindsym $mod+Shift+$down move down
     bindsym $mod+Shift+$up move up
-    bindsym $mod+Shift+$right move right
-    # Ditto, with arrow keys
-    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+$right move rightbspwm
     bindsym $mod+Shift+Down move down
     bindsym $mod+Shift+Up move up
     bindsym $mod+Shift+Right move right
@@ -224,11 +222,12 @@ bar {
 exec wl-paste -t text --watch clipman store --no-persist
 input type:keyboard xkb_numlock enabled
 
-output "*" bg ~/wallpapers/n7fobiqluln61.jpg fill
+output "*" bg ~/wallpapers/gravity.jpg fill
 
 
-gaps inner 8
-gaps outer 4
+gaps inner 4
+corner_radius 25
+
 
 # Volume up
 bindsym XF86AudioRaiseVolume exec pamixer -i 5
@@ -252,4 +251,4 @@ include /etc/sway/config.di*
 exec dunst
 exec "/usr/lib/polkit-kde-authentication-agent-1"
 font "JetBrainsMonoNerdFont" regular 11
-exec "systemctl start docker"
+
