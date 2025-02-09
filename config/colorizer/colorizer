@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+# Define colors
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+BLUE="\033[0;34m"
+MAGENTA="\033[0;35m"
+CYAN="\033[0;36m"
+GRAY="\033[0;37m"
+WHITE="\033[1;37m"
+BLACK="\033[0;30m"
+NORMAL="\033[m"
+
+# Define text styles
+BOLD="\033[1m"
+ITALIC="\033[3m"
+BLINK="\033[5m"
+
+# If 'help' is passed as an argument, print the help message
+if [[ "$1" == "help" ]]; then
+echo -e "Available Colors:"
+echo -e "${RED}RED${NORMAL}"
+echo -e "${GREEN}GREEN${NORMAL}"
+echo -ne "${YELLOW}YELLOW${NORMAL}\n"
+echo -ne "${BLUE}BLUE${NORMAL}\n"
+echo -ne "${MAGENTA}MAGENTA${NORMAL}\n"
+echo -ne "${CYAN}CYAN${NORMAL}\n"
+echo -ne "${GRAY}GRAY${NORMAL}\n"
+echo -ne "${WHITE}WHITE${NORMAL}\n"
+echo -ne "${BLACK}BLACK${NORMAL}\n"
+echo ""
+echo -e "Available Text Styles:"
+echo -e "${BOLD}BOLD${NORMAL}"
+echo -e "${ITALIC}ITALIC${NORMAL}"
+echo -e "${BLINK}BLINK${NORMAL}"
+echo ""
+echo "Usage: echo 'text' | colorize [color] [style...]"
+echo "Example: echo 'Hello World' | colorize red bold"
+exit 0
+fi
+
+# Initialize variable for combined styles
+color_style=""
+
+# Loop through all passed arguments to combine colors and styles
+for arg in "$@"; do
+style=$(echo "$arg" | tr '[:lower:]' '[:upper:]') # Make case-insensitive
+case "$style" in
+RED) color_style+="$RED" ;;
+GREEN) color_style+="$GREEN" ;;
+YELLOW) color_style+="$YELLOW" ;;
+BLUE) color_style+="$BLUE" ;;
+MAGENTA) color_style+="$MAGENTA" ;;
+CYAN) color_style+="$CYAN" ;;
+GRAY) color_style+="$GRAY" ;;
+WHITE) color_style+="$WHITE" ;;
+BLACK) color_style+="$BLACK" ;;
+BOLD) color_style+="$BOLD" ;;
+ITALIC) color_style+="$ITALIC" ;;
+BLINK) color_style+="$BLINK" ;;
+*) color_style+="$NORMAL" ;; # Default to normal if no valid option is passed
+esac
+done
+
+# Activate combined styles
+echo -ne "$color_style"
+
+# Read stdin (pipe) and print it
+cat
+
+# Back to normal
+echo -ne "$NORMAL"
+
