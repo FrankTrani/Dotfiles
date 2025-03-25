@@ -128,7 +128,7 @@ echo "It has been $(tput bold)$time_since hour$([ $time_since -ne 1 ] && echo s)
 if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
 
 alias src="clear && source ~/.zshrc"
-alias e='nvim'
+alias vim='nvim'
 alias cls='clear'
 alias bruteforce='genact -m bruteforce'
 alias sudoedit="sudo -e $1"
