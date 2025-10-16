@@ -1,69 +1,120 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+[[ $- != *i* ]] && return
 
-# Path to your Oh My Zsh installation.
+# --- Core shell behavior
+umask 027
+bindkey -v
+setopt prompt_subst
+setopt inc_append_history share_history hist_ignore_dups hist_ignore_space extended_history
+setopt auto_cd autopushd pushdignoredups interactive_comments
+
+# --- Oh My Zsh
 export ZSH="$HOME/.oh-my-zsh"
-
 ZSH_THEME=""
-
-
-
-# Uncomment the following line if pasting URLs and other text is messed up.
-DISABLE_MAGIC_FUNCTIONS="true"
-
 plugins=(git)
-
 source $ZSH/oh-my-zsh.sh
 
-alias ls='ls --color=auto'
-alias grep='grep --color=auto'
+# --- Completion (cached, case-insensitive)
+autoload -Uz compinit
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=**'
+compinit -u
+
+# --- Colors
 autoload -U colors && colors
-PS1="%{reset_color%}@%{fg[black]%}%~ %{$reset_color%}%% "
-eval "$(starship init zsh)"
-export LS_COLORS="$(vivid generate snazzy)"
-export SUDO_EDITOR="nvim"
+
+# --- PATH & env (dedup via zsh path array)
+typeset -U path
+path=(
+    $HOME/.local/bin
+    $HOME/.pyenv/bin
+    $HOME/gems/bin
+    $HOME/.local/share/gem/ruby/3.2.0/bin
+    $HOME/.local/share/gem/ruby/3.3.0/bin
+    /opt/cuda/bin
+    $path
+)
+export PATH="${(j/:/)path}"
+export GEM_HOME="$HOME/gems"
 export EDITOR=nvim
-echo ""
-echo ""
-# Anarchy, carbs, apple, femboyos, clearOS, darkOS,
+export SUDO_EDITOR=nvim
+export LANG=en_US.UTF-8
+export XCURSOR_THEME=Adwaita
+export XCURSOR_SIZE=24
+export LESS='-R'
+
+# --- CUDA
+export LD_LIBRARY_PATH="/opt/cuda/lib64:${LD_LIBRARY_PATH}"
+export CUDA_DIR=/opt/cuda
+export XLA_FLAGS="--xla_gpu_cuda_data_dir=$CUDA_DIR/nvvm/libdevice"
+
+# --- LS_COLORS
+export LS_COLORS="$(vivid generate dracula)"
+
+eval "$(starship init zsh)"
+
+# --- Startup banner
+echo
 fastfetch --logo apple
+echo
+quote | colorizer quote green bold
+echo
 
-
-echo ""
-echo ""
-quote | colorizer green bold
-echo ""
-echo ""
+# Pacman hours since full upgrade
 last_pac=$(tac /var/log/pacman.log | grep -m1 -F "[PACMAN] starting full system upgrade" | cut -d "[" -f2 | cut -d "]" -f1)
-time_since=$((($(date +%s) - $(date --date="$last_pac" +%s)) / 3600))
-echo "It has been $(tput bold)$time_since hour$([ $time_since -ne 1 ] && echo s) since last Update" | colorizer green bold
-if [[ $iatest -gt 0 ]]; then bind "set completion-ignore-case on"; fi
+time_since=$(( ( $(date +%s) - $(date --date="$last_pac" +%s) ) / 3600 ))
+print -r -- "It has been $(tput bold)$time_since hour$([ $time_since -ne 1 ] && echo s) since last Update" | colorizer green bold
+echo
 
-# Alias Definitions
-alias src="clear && source ~/.zshrc"
+# --- Aliases
+alias ls='eza --group-directories-first --icons --git'
+alias ll='eza -lha --group-directories-first --icons --git'
+alias grep='grep --color=auto'
+alias src='clear && source ~/.zshrc'
 alias vim='nvim'
 alias cls='clear'
-alias bruteforce='genact -m bruteforce'
-alias dcr='dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml'
-alias p="python"
+alias p='python'
 alias dn='cd ~/Downloads/'
 alias spotify='spt'
 alias weather='curl wttr.in'
-alias image="timg $1"
-alias website="ssh astra@5.161.57.83"
-alias bat="upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E 'percentage|state|time to full'"
+alias website='ssh astra@5.161.57.83'
+alias batinfo="upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E 'percentage|state|time to full'"
+alias gplog="git log --graph --decorate --oneline --all"
+alias dcr='dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml'
 
+# --- Functions
+image() { timg "$1"; }
+serve() { python -m http.server "${1:-8000}"; }
+update_all() { sudo pacman -Syu; paru -Syu; }
+extract() {
+    local f="$1"; [[ -z "$f" || ! -f "$f" ]] && { echo "Usage: extract <file>"; return 1; }
+    case "$f" in
+        *.tar.bz2) tar xjf "$f";;
+        *.tar.gz)  tar xzf "$f";;
+        *.tar.xz)  tar xJf "$f";;
+        *.tar.zst) tar --zstd -xf "$f";;
+        *.bz2)     bunzip2 "$f";;
+        *.rar)     unrar x "$f";;
+        *.gz)      gunzip "$f";;
+        *.tar)     tar xf "$f";;
+        *.tbz2)    tar xjf "$f";;
+        *.tgz)     tar xzf "$f";;
+        *.zip)     unzip "$f";;
+        *.Z)       uncompress "$f";;
+        *.7z)      7z x "$f";;
+        *)         echo "Don't know how to extract '$f'"; return 2;;
+    esac
+}
+ports() { sudo lsof -i -P -n | grep LISTEN; }
 
-# Export paths
-export PATH="$HOME/.pyenv/bin:$PATH"
-export XCURSOR_THEME=Adwaita
-export XCURSOR_SIZE=24
-export PATH=$PATH:/home/astra/.local/share/gem/ruby/3.2.0/bin
-export GEM_HOME="$HOME/gems"
-export PATH="$HOME/gems/bin:$PATH"
-export PATH=$HOME/.local/share/gem/ruby/3.3.0/bin:$PATH
-export PATH=/opt/cuda/bin:$PATH
-export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
-export CUDA_DIR=/opt/cuda
-export XLA_FLAGS=--xla_gpu_cuda_data_dir=$CUDA_DIR/nvvm/libdevice
+eval "$(zoxide init zsh)"
+eval "$(direnv hook zsh)"
+source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=cyan'
+source "$HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"  # must be last
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
+DISABLE_MAGIC_FUNCTIONS="true"
+
+# git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+# git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.zsh/zsh-syntax-highlighting
