@@ -41,14 +41,14 @@
       "rofi",
       "qt6ct",
       "network-manager-applet",
-      "swaybg",
-      "gnome-themes-extra"
+      "gnome-themes-extra",
+      "7zip",
+      "hypridle",
+      "hyprlock",
+      "hyprpaper"
     ],
     "aur_packages": [
-      "brave-bin",
-      "zen-browser-avx2-bin",
-      "visual-studio-code-bin",
-      "swayfx"
+      "visual-studio-code-bin"
     ]
   }
   

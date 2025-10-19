@@ -1,37 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Option B: each first-level dir under ./config becomes ~/.config/<pkg>
-# Strategy: delete ~/.config/<pkg>, then stow with default folding (1 symlink per pkg).
-
+# Repo root = one level above this script
 base_dir="$(cd -- "$(dirname -- "$0")/.." && pwd -P)"
-config_dir="$base_dir/config"
-target="$HOME/.config"
 
-command -v stow >/dev/null 2>&1 || { echo "error: stow not installed"; exit 1; }
-[[ -d "$config_dir" ]] || { echo "error: missing $config_dir"; exit 1; }
+# Ensure stow exists
+if ! command -v stow &>/dev/null; then
+  echo "[stow] Installing..."
+  sudo pacman -S --needed --noconfirm stow
+fi
 
-# Collect package dirs (skip names with spaces)
-mapfile -d '' pkgs < <(find "$config_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\0' | grep -zv ' ' || true)
-[[ ${#pkgs[@]} -gt 0 ]] || { echo "error: no packages under $config_dir"; exit 1; }
+# Make sure ~/.config exists
+mkdir -p "$HOME/.config"
 
-echo "Force-replacing packages in $target:"
-printf '  %s\n' "${pkgs[@]}"
-echo
+# Pre-clean: remove any blocking targets inside ~/.config that match your package contents
+cfg_src="$base_dir/config/.config"
+if [[ -d "$cfg_src" ]]; then
+  shopt -s nullglob dotglob
+  for item in "$cfg_src"/*; do
+    name="$(basename -- "$item")"
+    target="$HOME/.config/$name"
+    if [[ -e "$target" && ! -L "$target" ]]; then
+      echo "[stow] Removing existing target (not a symlink): $target"
+      rm -rf -- "$target"
+    fi
+  done
+  shopt -u nullglob dotglob
+fi
 
-for pkg in "${pkgs[@]}"; do
-  dst="$target/$pkg"
-  if [[ -e "$dst" || -L "$dst" ]]; then
-    echo "  rm -rf $dst"
-    rm -rf -- "$dst"
-  fi
+# Stow the 'config' package into $HOME so it creates ~/.config/...
+cd "$base_dir"
+stow -v -t "$HOME" -R config
 
-  echo "  stow $pkg -> $target"
-  stow --restow --verbose=1 \
-       --dir "$config_dir" \
-       --target "$target" \
-       "$pkg"
-done
-
-echo
-echo "Done."
+echo "Done. Linked $(basename "$base_dir")/config/.config/* -> $HOME/.config/*"

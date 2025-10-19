@@ -1,41 +1,53 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-base_dir="$(realpath "$(dirname $0)/..")"
-
+# Resolve base directory (the parent of where this script lives)
+base_dir="$(cd -- "$(dirname -- "$0")/.." && pwd -P)"
 json_file="$base_dir/scripts/packages.json"
 
-if ! command -v jq &> /dev/null; then
-  echo "jq is not installed. Installing now..."
-  sudo pacman -S --needed jq
+# Ensure jq is installed (used for JSON parsing)
+if ! command -v jq &>/dev/null; then
+  echo "jq not found. Installing..."
+  sudo pacman -S --needed --noconfirm jq
 fi
 
+# Check for JSON file
 if [[ ! -f "$json_file" ]]; then
-  echo "The JSON file does not exist: $json_file"
+  echo "Error: JSON file not found: $json_file"
   exit 1
 fi
 
-# Install pacman packages
+# --- Install Pacman packages ---
+echo "Installing Pacman packages..."
 pacman_packages=$(jq -r '.pacman_packages[]' "$json_file")
 
-echo "Installing pacman packages..."
-if [ ! -z "$packages_list" ]; then
-sudo pacman -S --needed $pacman_packages
+if [[ -n "$pacman_packages" ]]; then
+  sudo pacman -S --needed --noconfirm $pacman_packages
+else
+  echo "No Pacman packages found in JSON."
 fi
 
-# Check if yay is installed
-if ! command -v yay &> /dev/null; then
-  echo "Yay is not installed. Installing now..."
-  sudo pacman -S --needed git base-devel
-  git clone https://aur.archlinux.org/yay.git ~/yay
-  cd ~/yay
-  makepkg -si
-  cd ..
+# --- Ensure yay is installed ---
+if ! command -v yay &>/dev/null; then
+  echo "Yay not found. Installing from AUR..."
+  sudo pacman -S --needed --noconfirm git base-devel
+  tmp_dir=$(mktemp -d)
+  git clone https://aur.archlinux.org/yay.git "$tmp_dir/yay"
+  (
+    cd "$tmp_dir/yay"
+    makepkg -si --noconfirm
+  )
+  rm -rf "$tmp_dir"
 fi
 
-# Install AUR packages
+# --- Install AUR packages ---
+echo "Installing AUR packages with yay..."
 aur_packages=$(jq -r '.aur_packages[]' "$json_file")
 
-echo "Installing AUR packages with yay..."
-yay -S --needed $aur_packages
+if [[ -n "$aur_packages" ]]; then
+  yay -S --needed --noconfirm $aur_packages
+else
+  echo "No AUR packages found in JSON."
+fi
 
-echo "Package installation complete."
+echo "All packages installed successfully."
