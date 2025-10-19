@@ -1,30 +1,28 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Find repo root (one level up from scripts/)
-REPO_ROOT="$(cd -- "$(dirname -- "$0")/.." && pwd -P)"
-CONFIG_DIR="$REPO_ROOT/config"
+# Force-delete existing ~/.config/<pkg> before restowing repo configs.
 
-# Require GNU stow
-command -v stow >/dev/null 2>&1 || {
-  echo "error: stow not installed (pacman -S stow)" >&2
-  exit 1
-}
+base_dir="$(cd -- "$(dirname -- "$0")/.." && pwd -P)"
+cd "$base_dir"
 
-# Build package list, ignoring folders with spaces
-readarray -d '' PKGS < <(find "$CONFIG_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\0' \
-  | grep -zv ' ' || true)
+CONFIG_DIR="$base_dir/config"
+TARGET="$HOME/.config"
 
-if [[ ${#PKGS[@]} -eq 0 ]]; then
-  echo "No stowable packages found in $CONFIG_DIR" >&2
-  exit 1
-fi
+echo "Deleting existing ~/.config/<pkg> directories..."
+for pkg in "$CONFIG_DIR"/*; do
+    [ -d "$pkg" ] || continue
+    name="$(basename "$pkg")"
+    dest="$TARGET/$name"
+    
+    if [[ -e "$dest" || -L "$dest" ]]; then
+        echo "  Removing $dest"
+        rm -rf "$dest"
+    fi
+done
 
-echo "Restowing to \$HOME/.config:"
-printf '  %s\n' "${PKGS[@]}"
-stow --restow --verbose=1 \
-     --dir "$CONFIG_DIR" \
-     --target "$HOME/.config" \
-     "${PKGS[@]}"
+echo
+echo "Restowing configs from $CONFIG_DIR → $TARGET"
+stow -v -R --no-folding --dir "$CONFIG_DIR" --target "$TARGET"
 
-echo "✅ Done."
+echo "done"
