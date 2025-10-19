@@ -1,24 +1,5 @@
 [[ $- != *i* ]] && return
 
-# --- Core shell behavior
-umask 027
-bindkey -v
-setopt prompt_subst
-setopt inc_append_history share_history hist_ignore_dups hist_ignore_space extended_history
-setopt auto_cd autopushd pushdignoredups interactive_comments
-
-# --- Oh My Zsh
-export ZSH="$HOME/.oh-my-zsh"
-ZSH_THEME=""
-plugins=(git)
-source $ZSH/oh-my-zsh.sh
-
-# --- Completion (cached, case-insensitive)
-autoload -Uz compinit
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path "$HOME/.zsh/cache"
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}' 'r:|[._-]=**'
-compinit -u
 
 # --- Colors
 autoload -U colors && colors
@@ -31,7 +12,6 @@ path=(
     $HOME/gems/bin
     $HOME/.local/share/gem/ruby/3.2.0/bin
     $HOME/.local/share/gem/ruby/3.3.0/bin
-    /opt/cuda/bin
     $path
 )
 export PATH="${(j/:/)path}"
@@ -42,11 +22,6 @@ export LANG=en_US.UTF-8
 export XCURSOR_THEME=Adwaita
 export XCURSOR_SIZE=24
 export LESS='-R'
-
-# --- CUDA
-export LD_LIBRARY_PATH="/opt/cuda/lib64:${LD_LIBRARY_PATH}"
-export CUDA_DIR=/opt/cuda
-export XLA_FLAGS="--xla_gpu_cuda_data_dir=$CUDA_DIR/nvvm/libdevice"
 
 # --- LS_COLORS
 export LS_COLORS="$(vivid generate dracula)"
@@ -109,12 +84,6 @@ ports() { sudo lsof -i -P -n | grep LISTEN; }
 
 eval "$(zoxide init zsh)"
 eval "$(direnv hook zsh)"
-source "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=cyan'
-source "$HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"  # must be last
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 DISABLE_MAGIC_FUNCTIONS="true"
-
-# git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-# git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.zsh/zsh-syntax-highlighting
