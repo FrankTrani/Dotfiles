@@ -23,6 +23,6 @@ done
 
 echo
 echo "Restowing configs from $CONFIG_DIR → $TARGET"
-stow -v -R --no-folding --dir "$CONFIG_DIR" --target "$TARGET"
+stow -v -R --dir "$CONFIG_DIR" --target "$TARGET"
 
 echo "done"
