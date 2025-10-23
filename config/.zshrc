@@ -3,6 +3,9 @@
 
 # --- Colors
 autoload -U colors && colors
+autoload -Uz compinit && compinit
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+
 
 # --- PATH & env (dedup via zsh path array)
 typeset -U path
@@ -28,6 +31,23 @@ export LS_COLORS="$(vivid generate dracula)"
 
 eval "$(starship init zsh)"
 
+# --- History (persistent + live merge across terminals)
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=200000
+SAVEHIST=200000
+
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
+setopt SHARE_HISTORY
+setopt EXTENDED_HISTORY
+# Quality-of-life filters
+setopt HIST_IGNORE_SPACE      # commands starting with space aren't saved
+setopt HIST_REDUCE_BLANKS     # strip superfluous spaces
+setopt HIST_IGNORE_ALL_DUPS   # drop older duplicates when adding a new one
+setopt HIST_FIND_NO_DUPS      # no duplicates in history search results
+setopt HIST_VERIFY            # show the expanded command before executing
+
+
 # --- Startup banner
 echo
 fastfetch --logo apple
@@ -50,8 +70,6 @@ alias vim='nvim'
 alias cls='clear'
 alias p='python'
 alias dn='cd ~/Downloads/'
-alias spotify='spt'
-alias weather='curl wttr.in'
 alias website='ssh astra@5.161.57.83'
 alias batinfo="upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E 'percentage|state|time to full'"
 alias gplog="git log --graph --decorate --oneline --all"
@@ -59,7 +77,6 @@ alias dcr='dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml'
 
 # --- Functions
 image() { timg "$1"; }
-serve() { python -m http.server "${1:-8000}"; }
 update_all() { sudo pacman -Syu; paru -Syu; }
 extract() {
     local f="$1"; [[ -z "$f" || ! -f "$f" ]] && { echo "Usage: extract <file>"; return 1; }
@@ -80,7 +97,6 @@ extract() {
         *)         echo "Don't know how to extract '$f'"; return 2;;
     esac
 }
-ports() { sudo lsof -i -P -n | grep LISTEN; }
 
 eval "$(zoxide init zsh)"
 eval "$(direnv hook zsh)"
