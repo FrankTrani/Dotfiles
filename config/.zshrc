@@ -1,5 +1,19 @@
 [[ $- != *i* ]] && return
 
+#  Keybindings
+
+bindkey -e //emacs bindings
+
+# Ctrl+Right / Ctrl+Left = move by word
+bindkey '\e[1;5C' forward-word
+bindkey '\e[1;5D' backward-word
+bindkey '\e[5C'   forward-word
+bindkey '\e[5D'   backward-word
+bindkey '\e\e[C'  forward-word
+bindkey '\e\e[D'  backward-word
+
+bindkey '\e[3;5~' kill-word
+bindkey '^H' backward-kill-word
 
 # --- Colors
 autoload -U colors && colors
@@ -7,7 +21,7 @@ autoload -Uz compinit && compinit
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 
 
-# --- PATH & env (dedup via zsh path array)
+# --- PATH & env
 typeset -U path
 path=(
     $HOME/.local/bin
@@ -31,7 +45,7 @@ export LS_COLORS="$(vivid generate dracula)"
 
 eval "$(starship init zsh)"
 
-# --- History (persistent + live merge across terminals)
+# --- History
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=200000
 SAVEHIST=200000
@@ -76,8 +90,23 @@ alias gplog="git log --graph --decorate --oneline --all"
 alias dcr='dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml'
 
 # --- Functions
+ccat() {
+    if [ -z "$1" ]; then
+        echo "Usage: ccat <file>"
+        return 1
+    fi
+
+    if [ ! -f "$1" ]; then
+        echo "Error: '$1' not found"
+        return 1
+    fi
+
+    cat "$1" | wl-copy
+    echo "Copied $1 to clipboard."
+}
+
+
 image() { timg "$1"; }
-update_all() { sudo pacman -Syu; paru -Syu; }
 extract() {
     local f="$1"; [[ -z "$f" || ! -f "$f" ]] && { echo "Usage: extract <file>"; return 1; }
     case "$f" in
