@@ -1,0 +1,4 @@
+.zshenv
+.env
+.vscode/
+.DS_Store
