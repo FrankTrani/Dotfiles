@@ -71,23 +71,28 @@ echo
 
 # Pacman hours since full upgrade
 last_pac=$(tac /var/log/pacman.log | grep -m1 -F "[PACMAN] starting full system upgrade" | cut -d "[" -f2 | cut -d "]" -f1)
-time_since=$(( ( $(date +%s) - $(date --date="$last_pac" +%s) ) / 3600 ))
-print -r -- "It has been $(tput bold)$time_since hour$([ $time_since -ne 1 ] && echo s) since last Update" | colorizer green bold
+time_since=$((( ( $(date +%s) - $(date --date="$last_pac" +%s) ) / 3600 ) / 24 ))
+print -r -- "It has been $(tput bold)$time_since day$([ $time_since -ne 1 ] && echo s) since last Update" | colorizer green bold
+echo
+utime=$(uptime | cut -f1 -d",")
+echo $utime | colorizer blue
 echo
 
 # --- Aliases
 alias ls='eza --group-directories-first --icons --git'
 alias ll='eza -lha --group-directories-first --icons --git'
 alias grep='grep --color=auto'
-alias src='clear && source ~/.zshrc'
+alias src='clear && source ~/.zshenv && source ~/.zshrc'
 alias vim='nvim'
 alias cls='clear'
 alias p='python'
 alias dn='cd ~/Downloads/'
 alias website='ssh astra@5.161.57.83'
-alias batinfo="upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E 'percentage|state|time to full'"
 alias gplog="git log --graph --decorate --oneline --all"
 alias dcr='dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml'
+alias school='cd /home/astra/Documents/School-Work'
+alias VPN='curl https://am.i.mullvad.net/connected'
+alias usb='cd /media/usb'
 
 # --- Functions
 ccat() {
@@ -95,14 +100,23 @@ ccat() {
         echo "Usage: ccat <file>"
         return 1
     fi
-
+    
     if [ ! -f "$1" ]; then
         echo "Error: '$1' not found"
         return 1
     fi
-
+    
     cat "$1" | wl-copy
     echo "Copied $1 to clipboard."
+}
+
+math() {
+    if [ -z "$1" ]; then
+        echo "Usage: math '<expression>'"
+        return 1
+    fi
+    result=$(echo "scale=4; $1" | bc -l)
+    echo "$result"
 }
 
 
@@ -129,6 +143,14 @@ extract() {
 
 eval "$(zoxide init zsh)"
 eval "$(direnv hook zsh)"
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 
 DISABLE_MAGIC_FUNCTIONS="true"
+
+
+# BEGIN opam configuration
+# This is useful if you're using opam as it adds:
+#   - the correct directories to the PATH
+#   - auto-completion for the opam binary
+# This section can be safely removed at any time if needed.
+[[ ! -r '/home/astra/.opam/opam-init/init.zsh' ]] || source '/home/astra/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
+# END opam configuration

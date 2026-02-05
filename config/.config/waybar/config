@@ -146,7 +146,7 @@
     "format-critical": " {temperatureC}°C",
     "interval": 2,
     "critical-threshold": 80,
-    "on-click": "kitty htop"
+    "on-click": "kitty btop"
   },
   "pulseaudio": {
     "format": "{volume}% {icon}",
