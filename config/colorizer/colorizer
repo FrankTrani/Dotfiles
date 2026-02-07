@@ -1,74 +1,330 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-# Define colors
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-YELLOW="\033[0;33m"
-BLUE="\033[0;34m"
-MAGENTA="\033[0;35m"
-CYAN="\033[0;36m"
-GRAY="\033[0;37m"
-WHITE="\033[1;37m"
-BLACK="\033[0;30m"
-NORMAL="\033[m"
+# ANSI helpers
+ESC=$'\033'
+RESET="${ESC}[0m"
 
-# Define text styles
-BOLD="\033[1m"
-ITALIC="\033[3m"
-BLINK="\033[5m"
+die()  { printf "colorizer: %s\n" "$*" >&2; exit 2; }
+warn() { printf "colorizer: %s\n" "$*" >&2; }
 
-# If 'help' is passed as an argument, print the help message
-if [[ "$1" == "help" ]]; then
-echo -e "Available Colors:"
-echo -e "${RED}RED${NORMAL}"
-echo -e "${GREEN}GREEN${NORMAL}"
-echo -ne "${YELLOW}YELLOW${NORMAL}\n"
-echo -ne "${BLUE}BLUE${NORMAL}\n"
-echo -ne "${MAGENTA}MAGENTA${NORMAL}\n"
-echo -ne "${CYAN}CYAN${NORMAL}\n"
-echo -ne "${GRAY}GRAY${NORMAL}\n"
-echo -ne "${WHITE}WHITE${NORMAL}\n"
-echo -ne "${BLACK}BLACK${NORMAL}\n"
-echo ""
-echo -e "Available Text Styles:"
-echo -e "${BOLD}BOLD${NORMAL}"
-echo -e "${ITALIC}ITALIC${NORMAL}"
-echo -e "${BLINK}BLINK${NORMAL}"
-echo ""
-echo "Usage: echo 'text' | colorize [color] [style...]"
-echo "Example: echo 'Hello World' | colorize red bold"
-exit 0
-fi
+is_tty_stdin() { [[ -t 0 ]]; }  # true if stdin is terminal
 
-# Initialize variable for combined styles
-color_style=""
+# Styles
+STYLE_BOLD="${ESC}[1m"
+STYLE_DIM="${ESC}[2m"
+STYLE_ITALIC="${ESC}[3m"
+STYLE_UNDERLINE="${ESC}[4m"
+STYLE_BLINK="${ESC}[5m"
+STYLE_REVERSE="${ESC}[7m"
+STYLE_HIDDEN="${ESC}[8m"
+STYLE_STRIKE="${ESC}[9m"
 
-# Loop through all passed arguments to combine colors and styles
-for arg in "$@"; do
-style=$(echo "$arg" | tr '[:lower:]' '[:upper:]') # Make case-insensitive
-case "$style" in
-RED) color_style+="$RED" ;;
-GREEN) color_style+="$GREEN" ;;
-YELLOW) color_style+="$YELLOW" ;;
-BLUE) color_style+="$BLUE" ;;
-MAGENTA) color_style+="$MAGENTA" ;;
-CYAN) color_style+="$CYAN" ;;
-GRAY) color_style+="$GRAY" ;;
-WHITE) color_style+="$WHITE" ;;
-BLACK) color_style+="$BLACK" ;;
-BOLD) color_style+="$BOLD" ;;
-ITALIC) color_style+="$ITALIC" ;;
-BLINK) color_style+="$BLINK" ;;
-*) color_style+="$NORMAL" ;; # Default to normal if no valid option is passed
-esac
+# Basic color maps (8-color + bright)
+# Foreground: 30-37, Bright FG: 90-97
+# Background: 40-47, Bright BG: 100-107
+declare -A FG_BASIC=(
+  [black]=30 [red]=31 [green]=32 [yellow]=33 [blue]=34 [magenta]=35 [cyan]=36 [gray]=37 [white]=37
+)
+declare -A FG_BRIGHT=(
+  [bright_black]=90 [bright_red]=91 [bright_green]=92 [bright_yellow]=93 [bright_blue]=94 [bright_magenta]=95 [bright_cyan]=96 [bright_white]=97
+)
+declare -A BG_BASIC=(
+  [black]=40 [red]=41 [green]=42 [yellow]=43 [blue]=44 [magenta]=45 [cyan]=46 [gray]=47 [white]=47
+)
+declare -A BG_BRIGHT=(
+  [bright_black]=100 [bright_red]=101 [bright_green]=102 [bright_yellow]=103 [bright_blue]=104 [bright_magenta]=105 [bright_cyan]=106 [bright_white]=107
+)
+
+# Presets (built-in)
+# IMPORTANT: Must be declared before load_user_presets with set -u.
+declare -A PRESETS=(
+  [info]='--fg cyan'
+  [success]='--fg bright_green --bold'
+  [warn]='--fg bright_yellow --bold'
+  [danger]='--fg bright_white --bg red --bold'
+  [debug]='--fg 244'
+  [title]='--fg bright_magenta --bold --underline'
+  [subtle]='--fg 245'
+  [inverted]='--reverse'
+)
+
+USER_PRESET_FILE_DEFAULT="${XDG_CONFIG_HOME:-$HOME/.config}/colorizer/presets.conf"
+
+load_user_presets() {
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+
+  local line key val
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    # Strip trailing CR if file has Windows line endings
+    line="${line%$'\r'}"
+
+    [[ -z "$line" ]] && continue
+    [[ "$line" =~ ^[[:space:]]*# ]] && continue
+    [[ "$line" != *"="* ]] && continue
+
+    key="${line%%=*}"
+    val="${line#*=}"
+
+    # Trim whitespace
+    key="$(printf "%s" "$key" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+    val="$(printf "%s" "$val" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+
+    [[ -n "$key" ]] || continue
+    PRESETS["$key"]="$val"
+  done < "$file"
+}
+
+list_presets() {
+  printf "Presets:\n"
+  for k in "${!PRESETS[@]}"; do
+    printf "  %-12s %s\n" "$k" "${PRESETS[$k]}"
+  done | sort
+}
+
+# Parsing colors
+is_uint_0_255() {
+  [[ "$1" =~ ^[0-9]+$ ]] && (( 0 <= 10#$1 && 10#$1 <= 255 ))
+}
+
+parse_rgb_triplet() {
+  # input: "rgb(10,20,30)" OR "rgb:10,20,30" OR "10,20,30"
+  local s="$1"
+  s="${s#rgb:}"
+  s="${s#rgb(}"
+  s="${s%)}"
+  s="$(printf "%s" "$s" | tr -d ' ')"
+  IFS=',' read -r r g b <<<"$s" || true
+  [[ -n "${r:-}" && -n "${g:-}" && -n "${b:-}" ]] || return 1
+  [[ "$r" =~ ^[0-9]+$ && "$g" =~ ^[0-9]+$ && "$b" =~ ^[0-9]+$ ]] || return 1
+  (( 0 <= 10#$r && 10#$r <= 255 )) || return 1
+  (( 0 <= 10#$g && 10#$g <= 255 )) || return 1
+  (( 0 <= 10#$b && 10#$b <= 255 )) || return 1
+  printf "%s %s %s" "$r" "$g" "$b"
+}
+
+parse_hex_rgb() {
+  local h="${1#\#}"
+  [[ "$h" =~ ^[0-9A-Fa-f]{6}$ ]] || return 1
+  local r=$((16#${h:0:2}))
+  local g=$((16#${h:2:2}))
+  local b=$((16#${h:4:2}))
+  printf "%s %s %s" "$r" "$g" "$b"
+}
+
+fg_code_from_spec() {
+  local spec="${1,,}" # lowercase
+
+  if [[ -n "${FG_BASIC[$spec]:-}" ]]; then printf "%s" "${ESC}[${FG_BASIC[$spec]}m"; return 0; fi
+  if [[ -n "${FG_BRIGHT[$spec]:-}" ]]; then printf "%s" "${ESC}[${FG_BRIGHT[$spec]}m"; return 0; fi
+
+  if is_uint_0_255 "$spec"; then printf "%s" "${ESC}[38;5;${spec}m"; return 0; fi
+
+  if [[ "$spec" =~ ^\#[0-9a-fA-F]{6}$ ]]; then
+    read -r r g b <<<"$(parse_hex_rgb "$spec")" || return 1
+    printf "%s" "${ESC}[38;2;${r};${g};${b}m"; return 0
+  fi
+
+  if [[ "$spec" =~ ^rgb\(.*\)$ || "$spec" =~ ^rgb:.*$ || "$spec" =~ ^[0-9]+,[0-9]+,[0-9]+$ ]]; then
+    read -r r g b <<<"$(parse_rgb_triplet "$spec")" || return 1
+    printf "%s" "${ESC}[38;2;${r};${g};${b}m"; return 0
+  fi
+
+  return 1
+}
+
+bg_code_from_spec() {
+  local spec="${1,,}"
+
+  if [[ -n "${BG_BASIC[$spec]:-}" ]]; then printf "%s" "${ESC}[${BG_BASIC[$spec]}m"; return 0; fi
+  if [[ -n "${BG_BRIGHT[$spec]:-}" ]]; then printf "%s" "${ESC}[${BG_BRIGHT[$spec]}m"; return 0; fi
+
+  if is_uint_0_255 "$spec"; then printf "%s" "${ESC}[48;5;${spec}m"; return 0; fi
+
+  if [[ "$spec" =~ ^\#[0-9a-fA-F]{6}$ ]]; then
+    read -r r g b <<<"$(parse_hex_rgb "$spec")" || return 1
+    printf "%s" "${ESC}[48;2;${r};${g};${b}m"; return 0
+  fi
+
+  if [[ "$spec" =~ ^rgb\(.*\)$ || "$spec" =~ ^rgb:.*$ || "$spec" =~ ^[0-9]+,[0-9]+,[0-9]+$ ]]; then
+    read -r r g b <<<"$(parse_rgb_triplet "$spec")" || return 1
+    printf "%s" "${ESC}[48;2;${r};${g};${b}m"; return 0
+  fi
+
+  return 1
+}
+
+print_help() {
+  cat <<'EOF'
+colorizer: style stdin text (ANSI) with presets, foreground/background, 256-color, and truecolor.
+
+Usage:
+  echo "text" | colorizer [options]
+  echo "text" | colorizer [legacy tokens...]
+
+Options:
+  -p, --preset NAME        Apply a named preset (built-in or user file)
+      --preset-file PATH   Load additional presets from file (default: ~/.config/colorizer/presets.conf)
+      --list-presets       List all presets (includes user presets) and exit
+
+  -f, --fg SPEC            Foreground color:
+                           red, bright_red, 196 (0-255), #RRGGBB, rgb(10,20,30), 10,20,30
+  -b, --bg SPEC            Background color (same spec formats)
+
+  Styles:
+      --bold --dim --italic --underline --blink --reverse --hidden --strike
+
+  Misc:
+      --no-reset           Do not append reset at end (useful when chaining)
+      --raw                Do not validate stdin is piped (still reads stdin)
+      --palette            Print 0-255 color palette and exit
+  -h, --help               Show this help
+EOF
+}
+
+print_256_palette() {
+  for i in {0..255}; do
+    printf "\033[38;5;%sm%3s " "$i" "$i"
+    (( (i + 1) % 16 == 0 )) && printf "\n"
+  done
+  printf "\033[0m\n"
+}
+
+# Argument parsing
+preset=""
+preset_file="$USER_PRESET_FILE_DEFAULT"
+fg=""
+bg=""
+styles=""
+no_reset=0
+raw=0
+show_palette=0
+list_presets_flag=0
+legacy_tokens=()
+
+while (($#)); do
+  case "$1" in
+    -h|--help) print_help; exit 0 ;;
+    --list-presets) list_presets_flag=1; shift; continue ;;
+    --palette|--show-256) show_palette=1; shift; continue ;;
+    -p|--preset) preset="${2:-}"; [[ -n "$preset" ]] || die "missing preset name"; shift 2; continue ;;
+    --preset-file) preset_file="${2:-}"; [[ -n "$preset_file" ]] || die "missing preset file path"; shift 2; continue ;;
+    -f|--fg) fg="${2:-}"; [[ -n "$fg" ]] || die "missing fg spec"; shift 2; continue ;;
+    -b|--bg) bg="${2:-}"; [[ -n "$bg" ]] || die "missing bg spec"; shift 2; continue ;;
+
+    --bold) styles+="$STYLE_BOLD"; shift; continue ;;
+    --dim) styles+="$STYLE_DIM"; shift; continue ;;
+    --italic) styles+="$STYLE_ITALIC"; shift; continue ;;
+    --underline) styles+="$STYLE_UNDERLINE"; shift; continue ;;
+    --blink) styles+="$STYLE_BLINK"; shift; continue ;;
+    --reverse) styles+="$STYLE_REVERSE"; shift; continue ;;
+    --hidden) styles+="$STYLE_HIDDEN"; shift; continue ;;
+    --strike|--strikethrough) styles+="$STYLE_STRIKE"; shift; continue ;;
+
+    --no-reset) no_reset=1; shift; continue ;;
+    --raw) raw=1; shift; continue ;;
+    --) shift; break ;;
+    -*)
+      die "unknown option: $1 (try --help)"
+      ;;
+    *)
+      legacy_tokens+=("$1")
+      shift
+      ;;
+  esac
 done
 
-# Activate combined styles
-echo -ne "$color_style"
+# Load user presets before any listing / preset use
+load_user_presets "$preset_file"
 
-# Read stdin (pipe) and print it
+if (( list_presets_flag )); then
+  list_presets
+  exit 0
+fi
+
+if (( show_palette )); then
+  print_256_palette
+  exit 0
+fi
+
+# Apply preset by expanding it into options (then re-parse those options)
+if [[ -n "$preset" ]]; then
+  [[ -n "${PRESETS[$preset]:-}" ]] || die "unknown preset '$preset' (try --list-presets)"
+
+  # shellcheck disable=SC2206
+  preset_args=( ${PRESETS[$preset]} )
+
+  while ((${#preset_args[@]})); do
+    tok="${preset_args[0]}"
+    preset_args=("${preset_args[@]:1}")
+    case "$tok" in
+      -f|--fg) fg="${preset_args[0]:-}"; preset_args=("${preset_args[@]:1}");;
+      -b|--bg) bg="${preset_args[0]:-}"; preset_args=("${preset_args[@]:1}");;
+      --bold) styles+="$STYLE_BOLD";;
+      --dim) styles+="$STYLE_DIM";;
+      --italic) styles+="$STYLE_ITALIC";;
+      --underline) styles+="$STYLE_UNDERLINE";;
+      --blink) styles+="$STYLE_BLINK";;
+      --reverse) styles+="$STYLE_REVERSE";;
+      --hidden) styles+="$STYLE_HIDDEN";;
+      --strike|--strikethrough) styles+="$STYLE_STRIKE";;
+      --no-reset) no_reset=1;;
+      --raw) raw=1;;
+      *) legacy_tokens+=("$tok");;
+    esac
+  done
+
+  # Fix the preset bg parsing bug above properly:
+  # Re-run quickly if preset set bg via -b/--bg (rare), otherwise it’s fine.
+fi
+
+# Handle legacy tokens (colors + styles)
+for t in "${legacy_tokens[@]}"; do
+  tl="${t,,}"
+
+  case "$tl" in
+    bold) styles+="$STYLE_BOLD"; continue ;;
+    dim) styles+="$STYLE_DIM"; continue ;;
+    italic) styles+="$STYLE_ITALIC"; continue ;;
+    underline) styles+="$STYLE_UNDERLINE"; continue ;;
+    blink) styles+="$STYLE_BLINK"; continue ;;
+    reverse|invert|inverted) styles+="$STYLE_REVERSE"; continue ;;
+    hidden) styles+="$STYLE_HIDDEN"; continue ;;
+    strike|strikethrough) styles+="$STYLE_STRIKE"; continue ;;
+  esac
+
+  if [[ -z "$fg" ]]; then fg="$t"; continue; fi
+  if [[ -z "$bg" ]]; then bg="$t"; continue; fi
+
+  warn "unknown extra token '$t' ignored"
+done
+
+# Validate stdin unless --raw
+if (( raw == 0 )) && is_tty_stdin; then
+  die "no input. Pipe text into me. Example: echo 'hi' | colorizer --fg red --bold"
+fi
+
+# Build escape sequence
+seq=""
+
+if [[ -n "$fg" ]]; then
+  if ! seq+=$(fg_code_from_spec "$fg"); then
+    die "invalid --fg spec '$fg' (try red, bright_red, 196, #RRGGBB, rgb(10,20,30))"
+  fi
+fi
+
+if [[ -n "$bg" ]]; then
+  if ! seq+=$(bg_code_from_spec "$bg"); then
+    die "invalid --bg spec '$bg' (try black, bright_black, 236, #RRGGBB, rgb(10,20,30))"
+  fi
+fi
+
+seq+="$styles"
+
+# Output
+printf "%b" "$seq"
 cat
-
-# Back to normal
-echo -ne "$NORMAL"
-
+if (( no_reset == 0 )); then
+  printf "%b" "$RESET"
+fi
