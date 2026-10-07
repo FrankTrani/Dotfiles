@@ -1,0 +1,113 @@
+{
+  "logo": {
+    "type": "kitty",
+    "source": "~/.config/fastfetch/logo/archlinuxlogo.png",
+    "height": 20,
+    "padding": { "left": 4, "right": 4 },
+  },
+
+  "modules": [
+    {
+      "type": "title",
+      "key": "👤 USER",
+      "keyColor": "#0000ff",
+      "format": "{1}",
+    },
+    {
+      "type": "custom",
+      "format": "•☽────────────────✧˖°˖☆˖°˖✧────────────────☾•",
+    },
+    {
+      "type": "kernel",
+      "key": "🐧 Kernel",
+      "keyColor": "#ff0000",
+    },
+    {
+      "type": "os",
+      "key": "⚙️ OS",
+      "keyColor": "#FF9800",
+    },
+    {
+      "type": "host",
+      "key": "💻 Host",
+      "keyColor": "#fff200",
+      "format": "{2}",
+    },
+    {
+      "type": "packages",
+      "key": "📦 Packages",
+      "keyColor": "#00ffaa",
+    },
+    {
+      "type": "shell",
+      "key": "🐚 Shell",
+      "keyColor": "#00ffe0",
+    },
+    {
+      "type": "wm",
+      "key": "🪟 WM",
+      "keyColor": "#00eeff",
+      "format": "{1} {version}",
+    },
+    {
+      "type": "terminal",
+      "key": "</> Terminal",
+      "keyColor": "#0097ff",
+    },
+    {
+      "type": "cpu",
+      "key": "🧠 CPU",
+      "keyColor": "#0053ff",
+      "format": "{1}",
+    },
+    {
+      "type": "gpu",
+      "key": "🎮 GPU",
+      "keyColor": "#2100ff",
+      "format": "{1} {2} @ {12}",
+    },
+    {
+      "type": "memory",
+      "key": "🔄 RAM",
+      "keyColor": "#6f00ff",
+    },
+    {
+      "type": "swap",
+      "key": "🔁 Swap Memory",
+      "keyColor": "#ad00ff",
+    },
+    {
+      "type": "disk",
+      "key": "💾 SSD",
+      "keyColor": "#d900ff",
+    },
+    {
+      "type": "uptime",
+      "key": "⏰ Uptime",
+      "keyColor": "#36ff00",
+    },
+    {
+      "type": "datetime",
+      "key": "  Date and Time",
+      "keyColor": "",
+      "format": "{3}/{11}/{1} - {14}:{18} {22}",
+    },
+    {
+      "type": "command",
+      "shell": "/bin/bash",
+      "text": "$HOME/.config/fastfetch/last_update.sh",
+      "key": "  Last Update",
+      "keyColor": "",
+    },
+    {
+      "type": "custom",
+      "format": "•☽────────────────✧˖°˖☆˖°˖✧────────────────☾•",
+    },
+    {
+      "type": "colors",
+      "paddingLeft": 15,
+      "symbol": "star",
+    },
+    "break",
+  ],
+}

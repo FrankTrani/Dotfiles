@@ -1,0 +1,162 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "type": "kitty-direct",
+    "source": "~/Documents/Dotfiles/config/.config/fastfetch/logo/archlinuxlogo.png",
+    "width": 30,
+    "padding": {
+      "left": 1,
+      "right": 10,
+    },
+  },
+  "display": {
+    "separator": " ",
+    "color": "default",
+  },
+  "modules": [
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[33m┌──────────────────────Hardware──────────────────────┐",
+    },
+    {
+      "type": "title",
+      "key": " US",
+      "keyColor": "red",
+    },
+    {
+      "type": "cpu",
+      "key": "│ ├",
+      "showPeCoreCount": true,
+      "keyColor": "red",
+    },
+    {
+      "type": "gpu",
+      "key": "│ ├󰢮",
+      "keyColor": "red",
+    },
+    {
+      "type": "memory",
+      "key": "│ ├",
+      "keyColor": "red",
+    },
+    {
+      "type": "disk",
+      "key": "│ └",
+      "keyColor": "red",
+      "format": "{1} / {2} ({3})",
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[33m└────────────────────────────────────────────────────┘",
+    },
+
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[33m┌──────────────────────Software──────────────────────┐",
+    },
+    {
+      "type": "os",
+      "key": "󰀵 OS",
+      "keyColor": "green",
+    },
+    {
+      "type": "kernel",
+      "key": "│ ├",
+      "keyColor": "green",
+    },
+    {
+      "type": "packages",
+      "key": "│ ├󰏖",
+      "keyColor": "green",
+    },
+    {
+      "type": "terminal",
+      "key": "│ ├",
+      "keyColor": "green",
+    },
+    {
+      "type": "shell",
+      "key": "│ └",
+      "keyColor": "green",
+    },
+
+    "break",
+    {
+      "type": "de",
+      "key": " DE",
+      "keyColor": "blue",
+    },
+    {
+      "type": "lm",
+      "key": "│ ├",
+      "keyColor": "blue",
+    },
+    {
+      "type": "wm",
+      "key": "│ ├",
+      "keyColor": "blue",
+    },
+    {
+      "type": "wmtheme",
+      "key": "│ ├󰉼",
+      "keyColor": "blue",
+    },
+    {
+      "type": "font",
+      "key": "│ ├",
+      "keyColor": "blue",
+    },
+    {
+      "type": "cursor",
+      "key": "│ └󰆿",
+      "keyColor": "blue",
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[33m└────────────────────────────────────────────────────┘",
+    },
+
+    "break",
+    {
+      "type": "custom",
+      "format": "\u001b[33m┌────────────────────────────────────────────────────┐",
+    },
+    {
+      "type": "uptime",
+      "key": "  Uptime",
+      "keyColor": "magenta",
+    },
+    {
+      "type": "command",
+      "text": "battery",
+      "shell": "/bin/bash -lc",
+      "key": "  Battery",
+      "keyColor": "magenta",
+    },
+    {
+      "type": "datetime",
+      "key": "  Date and Time",
+      "keyColor": "magenta",
+      "format": "{3}/{11}/{1} - {14}:{18} {22}",
+    },
+    {
+      "type": "command",
+      "shell": "/bin/bash",
+      "text": "$HOME/.config/fastfetch/last_update.sh",
+      "key": "  Last Update",
+      "keyColor": "magenta",
+    },
+    {
+      "type": "custom",
+      "format": "\u001b[33m└────────────────────────────────────────────────────┘",
+    },
+    {
+      "type": "colors",
+      "paddingLeft": 20,
+      "symbol": "star",
+    },
+    "break",
+  ],
+}

@@ -1,4 +1,3 @@
-# ~/.zshrc
 # Interactive only
 [[ $- != *i* ]] && return
 
@@ -53,7 +52,7 @@ export LANG=en_US.UTF-8
 export XCURSOR_THEME=Adwaita
 export XCURSOR_SIZE=24
 export LESS='-R'
-
+export STARSHIP_CONFIG=~/Documents/Dotfiles/config/.config/starship.toml
 
 # LS_COLORS + Prompt
 
@@ -91,20 +90,10 @@ setopt INTERACTIVE_COMMENTS
 # Startup banner helpers
 
 pacman_days_since_update() {
-    local cache="${XDG_CACHE_HOME:-$HOME/.cache}/pacman_last_upgrade"
     local now_day ts epoch days line
     
     now_day="$(date +%F)"
     
-    # Return cached value for today if present
-    if [[ -r "$cache" ]]; then
-        local cached_day cached_val
-        read -r cached_day cached_val < "$cache"
-        if [[ "$cached_day" == "$now_day" ]]; then
-            print -r -- "$cached_val"
-            return 0
-        fi
-    fi
     
     line=$(grep -F "[PACMAN] starting full system upgrade" /var/log/pacman.log | tail -n1) || {
         print -r -- "unknown"
@@ -129,44 +118,22 @@ pacman_days_since_update() {
 
 if [[ -t 1 ]]; then
     echo
-    command -v fastfetch >/dev/null && fastfetch --logo apple
+    command -v fastfetch >/dev/null && fastfetch
     echo
     
     if command -v quote >/dev/null && command -v colorizer >/dev/null; then
         quote | colorizer --preset retro_amber
-        echo
+        # echo
     fi
     
-    time_since=$(pacman_days_since_update 2>/dev/null)
-    [[ -z "$time_since" ]] && time_since="unknown"
-    
-    if [[ "$time_since" == "unknown" ]]; then
-        msg="It has been unknown days since last update"
-        elif [[ "$time_since" == 1 ]]; then
-        msg="It has been 1 day since last update"
-    else
-        msg="It has been $time_since days since last update"
-    fi
-    
-    if command -v colorizer >/dev/null; then
-        print -r -- "$(tput bold)$msg" | colorizer --preset retro_green
-        echo
-        utime=$(uptime | cut -f1 -d",")
-        print -r -- "$utime" | colorizer --preset retro_blue
-        echo
-    else
-        print -r -- "$msg"
-    fi
 fi
 
 
 # Aliases
 
-alias ls='eza --group-directories-first --icons=always --git'
-alias ll='eza --long --header --group-directories-first --icons=always --git'
-alias la='eza --long --all --header --group-directories-first --icons=always --git'
+alias la='eza --group-directories-first --icons=always --git'
 alias lt='eza --tree --level=2 --icons=always'
-
+alias ll='eza --group-directories-first -l --header --long --absolute --group --git --extended --classify'
 alias grep='grep --color=auto'
 alias src='clear && source ~/.zshrc'
 alias vim='nvim'
@@ -179,6 +146,9 @@ alias dcr='dnscrypt-proxy -config /etc/dnscrypt-proxy/dnscrypt-proxy.toml'
 alias school='cd /home/astra/Documents/School-Work'
 alias VPN='curl https://am.i.mullvad.net/connected'
 alias usb='cd /media/usb'
+alias open='xdg-open'
+alias clip="xclip -selection clipboard"
+alias pwn="ssh -i key hacker@dojo.pwn.college"
 
 alias cp='cp -iv'
 alias mv='mv -iv'
@@ -237,7 +207,7 @@ extract() {
 # Tool init
 
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
-command -v direnv >/dev/null && eval "$(direnv hook zsh)"
+# command -v direnv >/dev/null && eval "$(direnv hook zsh)"
 
 DISABLE_MAGIC_FUNCTIONS="true"
 
@@ -245,3 +215,4 @@ DISABLE_MAGIC_FUNCTIONS="true"
 # opam configuration
 
 [[ ! -r "$HOME/.opam/opam-init/init.zsh" ]] || source "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null
+export PATH=$PATH:~/.spicetify
