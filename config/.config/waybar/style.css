@@ -1,143 +1,432 @@
-/* === Waybar — GTK-valid CSS (no :root) === */
-@define-color bg rgba(8,10,18,0.55);
-@define-color segment rgba(0,0,0,0.28);
-@define-color fg #cfd8e3;
-@define-color muted #8ca3b5;
-@define-color accent #00e7ff;
-@define-color accent_weak rgba(0,231,255,0.15);
-@define-color accent_weak2 rgba(0,231,255,0.07);
-@define-color warn #ffbe61;
-@define-color crit #f53c3c;
-@define-color ok #26a65b;
+/* ============================================================
+   PALETTE
+   ============================================================ */
 
-/* Global */
+@define-color bg rgba(8, 10, 18, 0.72);
+@define-color panel rgba(18, 22, 32, 0.82);
+@define-color panel_hover rgba(30, 36, 50, 0.88);
+
+@define-color fg #d7e0ea;
+@define-color muted #8291a8;
+
+@define-color accent #70d7ff;
+@define-color accent_soft rgba(112, 215, 255, 0.16);
+
+@define-color green #8bd49c;
+@define-color yellow #e5c07b;
+@define-color red #e06c75;
+
+
+/* ============================================================
+   GLOBAL
+   ============================================================ */
+
 * {
   border: none;
+  border-radius: 0;
+
+  font-family:
+    "JetBrainsMono Nerd Font",
+    "JetBrainsMono NF",
+    monospace;
+
   font-size: 13px;
-  font-family: "JetBrainsMono Nerd Font", "JetBrainsMono NF", monospace;
-  min-height: 24px;
+  font-weight: 500;
+
+  min-height: 0;
 }
+
+
+/* ============================================================
+   WAYBAR
+   ============================================================ */
 
 window#waybar {
-  background: @bg;
-  border-radius: 12px;
-  margin: 4px;
+  background: transparent;
+  color: @fg;
 }
 
-/* Segment shells */
+
+/* ============================================================
+   MAIN GROUPS
+   ============================================================ */
+
 .modules-left,
 .modules-center,
 .modules-right {
-  background: @segment;
-  border-radius: 16px;
-  margin: 6px 6px 0 6px;
-  padding: 4px 4px;
+  background: @bg;
+
+  border-radius: 14px;
+
+  margin-top: 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+
+  padding: 5px 8px;
 }
 
-/* Common modules */
-#battery,
-#bluetooth,
-#network,
-#memory,
+
+/* ============================================================
+   COMMON MODULE STYLE
+   ============================================================ */
+
+#custom-logo,
+#clock,
+
 #disk,
+#memory,
 #cpu,
 #temperature,
-#custom-backlight,     /* custom/backlight */
-#pulseaudio,
-#idle_inhibitor,
-#custom-weather,       /* custom/weather */
-#custom-powerDraw,     /* custom/powerDraw */
-#tray,
+#custom-powerDraw,
+
 #window,
-#workspaces,
-#custom-logo,
-#clock {
+
+#tray,
+#custom-notifications,
+#custom-tailscale,
+#custom-backlight,
+#idle_inhibitor,
+#bluetooth,
+#pulseaudio,
+#network,
+#battery {
   color: @fg;
-  padding: 0 12px;
+
+  padding: 4px 11px;
+  margin: 0 3px;
+
+  border-radius: 9px;
 }
 
-/* Logo & clock */
-#custom-logo { color: @accent; font-weight: 600; }
-#clock { color: #6fd3ff; font-weight: 700; }
 
-/* Subtle hover feedback */
-#battery:hover,
-#bluetooth:hover,
-#network:hover,
-#memory:hover,
+/* ============================================================
+   LEFT SIDE
+   ============================================================ */
+
+#custom-logo {
+  color: @accent;
+
+  font-size: 17px;
+  font-weight: 800;
+
+  padding-left: 12px;
+  padding-right: 13px;
+
+  margin-right: 5px;
+}
+
+
+#clock {
+  color: @accent;
+
+  font-weight: 700;
+
+  padding-left: 12px;
+  padding-right: 12px;
+
+  margin-right: 6px;
+}
+
+
+#disk,
+#memory,
+#cpu,
+#temperature,
+#custom-powerDraw {
+  color: @fg;
+}
+
+
+#temperature.critical {
+  color: @red;
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   WINDOW TITLE
+   ============================================================ */
+
+#window {
+  color: @muted;
+
+  font-weight: 500;
+
+  padding-left: 14px;
+  padding-right: 14px;
+
+  margin-left: 7px;
+}
+
+
+/* ============================================================
+   WORKSPACES
+   ============================================================ */
+
+#workspaces {
+  padding: 2px 5px;
+}
+
+
+#workspaces button {
+  background: transparent;
+
+  color: @muted;
+
+  min-width: 28px;
+
+  padding: 5px 9px;
+  margin: 0 3px;
+
+  border-radius: 9px;
+
+  font-weight: 700;
+}
+
+
+#workspaces button:hover {
+  background: @panel_hover;
+
+  color: @fg;
+}
+
+
+#workspaces button.active {
+  background: @accent_soft;
+
+  color: @accent;
+}
+
+
+#workspaces button.urgent {
+  background: rgba(224, 108, 117, 0.18);
+
+  color: @red;
+}
+
+
+/* ============================================================
+   SYSTEM TRAY
+   ============================================================ */
+
+#tray {
+  background: transparent;
+
+  padding-left: 10px;
+  padding-right: 10px;
+
+  margin-right: 5px;
+}
+
+
+/* ============================================================
+   NOTIFICATIONS
+   ============================================================ */
+
+#custom-notifications {
+  font-size: 15px;
+
+  color: @fg;
+}
+
+
+/* ============================================================
+   TAILSCALE
+   ============================================================ */
+
+#custom-tailscale {
+  min-width: 24px;
+
+  padding-left: 10px;
+  padding-right: 10px;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  border-radius: 8px;
+}
+
+
+#custom-tailscale.connected {
+  background: rgba(139, 212, 156, 0.15);
+
+  color: @green;
+}
+
+
+#custom-tailscale.disconnected {
+  background: rgba(224, 108, 117, 0.14);
+
+  color: @red;
+}
+
+
+/* ============================================================
+   BRIGHTNESS
+   ============================================================ */
+
+#custom-backlight {
+  color: @fg;
+}
+
+
+/* ============================================================
+   IDLE INHIBITOR
+   ============================================================ */
+
+#idle_inhibitor {
+  font-size: 14px;
+}
+
+
+#idle_inhibitor.activated {
+  color: @accent;
+}
+
+
+#idle_inhibitor.deactivated {
+  color: @muted;
+}
+
+
+/* ============================================================
+   BLUETOOTH
+   ============================================================ */
+
+#bluetooth {
+  color: @muted;
+}
+
+
+#bluetooth.connected {
+  color: @accent;
+}
+
+
+#bluetooth.disabled {
+  color: @muted;
+}
+
+
+/* ============================================================
+   AUDIO
+   ============================================================ */
+
+#pulseaudio {
+  color: @fg;
+
+  min-width: 50px;
+}
+
+
+#pulseaudio.muted {
+  color: @red;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+/* ============================================================
+   NETWORK
+   ============================================================ */
+
+#network {
+  color: @muted;
+
+  min-width: 22px;
+}
+
+
+#network.wifi,
+#network.ethernet {
+  color: @accent;
+}
+
+
+#network.disconnected {
+  color: @red;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+
+/* ============================================================
+   BATTERY
+   ============================================================ */
+
+#battery {
+  min-width: 62px;
+
+  color: @fg;
+}
+
+
+#battery.charging {
+  background: rgba(139, 212, 156, 0.15);
+
+  color: @green;
+}
+
+
+#battery.warning:not(.charging) {
+  background: rgba(229, 192, 123, 0.14);
+
+  color: @yellow;
+}
+
+
+#battery.critical:not(.charging) {
+  background: rgba(224, 108, 117, 0.15);
+
+  color: @red;
+}
+
+
+/* ============================================================
+   HOVER STATES
+   ============================================================ */
+
+#custom-logo:hover,
+#clock:hover,
+
 #disk:hover,
+#memory:hover,
 #cpu:hover,
 #temperature:hover,
-#custom-backlight:hover,
-#pulseaudio:hover,
-#idle_inhibitor:hover,
-#custom-weather:hover,
 #custom-powerDraw:hover,
-#custom-logo:hover,
-#clock:hover {
-  background: @accent_weak2;
-  border-radius: 12px;
 
+#window:hover,
+
+#custom-notifications:hover,
+#custom-backlight:hover,
+#idle_inhibitor:hover,
+#bluetooth:hover,
+#pulseaudio:hover,
+#network:hover,
+#battery:hover {
+  background: @panel_hover;
+
+  color: @fg;
 }
 
-/* Pulseaudio / Temperature states */
-#pulseaudio.muted { color: @crit; font-weight: 700; }
-#temperature.critical { color: @crit; font-weight: 700; }
 
-/* Battery state “chips” */
-#battery.charging {
-  background: rgba(38,166,91,0.22);
-  color: #e9fff0;
-  border-radius: 12px;
-}
-#battery.warning:not(.charging) {
-  background: rgba(255,190,97,0.28);
-  color: #1a1a1a;
-  border-radius: 12px;
-}
-#battery.critical:not(.charging) {
-  background: rgba(245,60,60,0.28);
-  color: #fff;
-  border-radius: 12px;
-}
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
 
-/* Workspaces */
-#workspaces { padding: 0 6px; }
-#workspaces button {
-  padding: 3px 10px;
-  margin: 4px;
+tooltip {
+  background: rgba(12, 15, 24, 0.97);
+
+  border: 1px solid rgba(112, 215, 255, 0.18);
+
   border-radius: 10px;
-  background: transparent;
-  color: #8fd7ff;
-  font-weight: 700;
-  min-width: 26px;
-}
-#workspaces button:hover {
-  background: @accent_weak2;
-  color: @accent;
-  border-radius: 12px;
-
-}
-#workspaces button.active {
-  background: @accent_weak;
-  color: @accent;
-  border-radius: 12px;
-
 }
 
-/* Window title dimmed */
-#window { color: @muted; }
 
-/* Tray */
-#tray { padding-right: 8px; }
+tooltip label {
+  color: @fg;
 
-/* Optional: power menu module if you add custom/powermenu */
-#custom-powermenu {
-  color: #ff6b6b;
-  padding: 0 10px;
-}
-#custom-powermenu:hover {
-  background: rgba(255,107,107,0.12);
-  border-radius: 12px;
-
+  padding: 8px 10px;
 }

@@ -2,6 +2,7 @@
   "layer": "top",
   "position": "top",
   "reload_style_on_change": true,
+
   "modules-left": [
     "custom/logo",
     "clock",
@@ -12,11 +13,15 @@
     "custom/powerDraw",
     "hyprland/window"
   ],
+
   "modules-center": [
     "hyprland/workspaces"
   ],
+
   "modules-right": [
     "tray",
+    "custom/notifications",
+    "custom/tailscale",
     "custom/backlight",
     "idle_inhibitor",
     "bluetooth",
@@ -24,13 +29,16 @@
     "network",
     "battery"
   ],
+
   "custom/logo": {
     "format": "",
     "tooltip": false,
     "on-click": "/home/astra/Documents/Dotfiles/config/.config/hypr/powermenu.sh"
   },
+
   "hyprland/workspaces": {
     "format": "{icon}",
+
     "format-icons": {
       "1": "1",
       "2": "2",
@@ -42,151 +50,222 @@
       "8": "8",
       "9": "9",
       "10": "0"
+    },
+
+    "persistent-workspaces": {
+      "*": 10
     }
   },
-  "idle_inhibitor": {
-    "format": "<span font='12'>{icon} </span>",
-    "format-icons": {
-      "activated": "󰈈",
-      "deactivated": "󰈉"
-    }
-  },
+
   "clock": {
     "format": "{:%I:%M:%S %p}",
     "interval": 1,
+
     "tooltip-format": "\n<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+
     "calendar-weeks-pos": "right",
+
     "today-format": "<span color='#7645AD'><b><u>{}</u></b></span>",
     "format-calendar": "<span color='#aeaeae'><b>{}</b></span>",
     "format-calendar-weeks": "<span color='#aeaeae'><b>W{:%V}</b></span>",
     "format-calendar-weekdays": "<span color='#aeaeae'><b>{}</b></span>"
   },
-  "bluetooth": {
-    "format-on": "",
-    "format-off": "",
-    "format-disabled": "󰂲",
-    "format-connected": "󰂴",
-    "format-connected-battery": "{device_battery_percentage}% 󰂴",
-    "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
-    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
-    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-    "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
-    "on-click": "rofi-bluetooth"
-  },
-  "network": {
-    "format-wifi": " ",
-    "format-ethernet": " ",
-    "format-disconnected": "",
-    "tooltip-format": "{ipaddr}",
-    "tooltip-format-wifi": "{essid} ({signalStrength}%)  | {ipaddr}",
-    "tooltip-format-ethernet": "{ifname} 🖧 | {ipaddr}",
-    "on-click": "nm-connection-editor"
-  },
-  "battery": {
-    "interval": 1,
-    "states": {
-      "good": 95,
-      "warning": 30,
-      "critical": 20
-    },
-    "format": "{capacity}%  {icon} ",
-    "format-charging": "{capacity}% 󰂄 ",
-    "format-plugged": "{capacity}% 󰂄 ",
-    "format-alt": "{time} {icon}",
-    "format-icons": [
-      "󰁻",
-      "󰁼",
-      "󰁾",
-      "󰂀",
-      "󰂂",
-      "󰁹"
-    ]
-  },
-  "custom/backlight": {
-    "exec": "~/.config/waybar/scripts/brightness.sh",
-    "return-type": "json",
-    "interval": 1,
-    "on-scroll-up": "brightnessctl set +10%",
-    "on-scroll-down": "brightnessctl set 10%-",
-    "tooltip": true
-  },
+
   "disk": {
     "interval": 30,
-    "format": "  {percentage_used}%",
-    "path": "/"
+    "format": " {percentage_used}%",
+    "path": "/",
+    "tooltip-format": "{used} used / {total}"
   },
-  "cpu": {
-    "interval": 1,
-    "format": " {usage}%",
-    "min-length": 6,
-    "max-length": 6,
-    "format-icons": [
-      "▁",
-      "▂",
-      "▃",
-      "▄",
-      "▅",
-      "▆",
-      "▇",
-      "█"
-    ]
-  },
+
   "memory": {
-    "format": " {percentage}%"
+    "interval": 2,
+    "format": " {percentage}%"
   },
-  "hyprland/window": {
-    "format": "( {class} )",
-    "rewrite": {
-      "(.*) - Mozilla Firefox": "🌎 $1",
-      "(.*) - zsh": "> [$1]"
-    }
+
+  "cpu": {
+    "interval": 2,
+    "format": " {usage}%"
   },
+
   "temperature": {
     "format": " {temperatureC}°C",
     "format-critical": " {temperatureC}°C",
-    "interval": 2,
+
+    "interval": 3,
     "critical-threshold": 80,
+
     "on-click": "kitty btop"
   },
+
+  "custom/powerDraw": {
+    "format": "{}",
+    "interval": 2,
+    "exec": "~/.config/waybar/scripts/powerdraw.sh",
+    "return-type": "json"
+  },
+
+  "hyprland/window": {
+    "format": "{class}",
+    "max-length": 35,
+    "separate-outputs": true,
+
+    "rewrite": {
+      "(.*) - Mozilla Firefox": " $1",
+      "(.*) - zsh": " $1",
+      "kitty": " kitty"
+    }
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+  "custom/notifications": {
+    "format": "{icon}",
+    "return-type": "json",
+
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+
+    "format-icons": {
+      "notification": "",
+      "none": "",
+      "dnd-notification": "",
+      "dnd-none": "",
+      "inhibited-notification": "",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "",
+      "dnd-inhibited-none": ""
+    },
+
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+
+    "tooltip": true,
+    "tooltip-format": "Left click: Notifications\nRight click: Do Not Disturb",
+
+    "escape": true
+  },
+
+  "custom/tailscale": {
+    "format": "{}",
+    "return-type": "json",
+
+    "exec": "tailscale status --json 2>/dev/null | jq -c 'if .BackendState == \"Running\" then {text:\"TS\",class:\"connected\",tooltip:(\"Tailscale connected\\n\" + (.Self.TailscaleIPs[0] // \"No IP\"))} else {text:\"TS\",class:\"disconnected\",tooltip:\"Tailscale disconnected\"} end'",
+
+    "interval": 10,
+
+    "on-click": "kitty -e bash -lc 'tailscale status; exec bash'"
+  },
+
+  "custom/backlight": {
+    "exec": "~/.config/waybar/scripts/brightness.sh",
+    "return-type": "json",
+
+    "interval": 3,
+
+    "on-scroll-up": "brightnessctl set +10%",
+    "on-scroll-down": "brightnessctl set 10%-",
+
+    "tooltip": true
+  },
+
+  "idle_inhibitor": {
+    "format": "{icon}",
+
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    },
+
+    "tooltip-format-activated": "Idle inhibition enabled",
+    "tooltip-format-deactivated": "Idle inhibition disabled"
+  },
+
+  "bluetooth": {
+    "format-on": "",
+    "format-off": "",
+    "format-disabled": "BT",
+
+    "format-connected": "",
+    "format-connected-battery": " {device_battery_percentage}%",
+
+    "tooltip-format": "{controller_alias}\n{num_connections} connected",
+
+    "tooltip-format-connected": "{controller_alias}\n\n{num_connections} connected\n\n{device_enumerate}",
+
+    "tooltip-format-enumerate-connected": "{device_alias}",
+
+    "tooltip-format-enumerate-connected-battery": "{device_alias}  {device_battery_percentage}%",
+
+    "on-click": "rofi-bluetooth"
+  },
+
   "pulseaudio": {
-    "format": "{volume}% {icon}",
-    "format-bluetooth": "󰂰",
-    "format-muted": "<span font='12'></span>",
+    "format": "{icon} {volume}%",
+    "format-bluetooth": " {volume}%",
+    "format-muted": "MUTE",
+
     "format-icons": {
       "default": [
         "",
         "",
         ""
       ],
+
       "headphones": "",
-      "bluetooth": "󰥰",
+      "bluetooth": "",
       "car": ""
     },
+
     "justify": "center",
+
     "on-click": "pamixer -t",
     "on-click-right": "pavucontrol",
-    "tooltip-format": "{icon}  {volume}%"
+
+    "on-scroll-up": "pamixer -i 5",
+    "on-scroll-down": "pamixer -d 5",
+
+    "tooltip-format": "{icon} {volume}%"
   },
-  "jack": {
-    "format": "{} 󱎔",
-    "format-xrun": "{xruns} xruns",
-    "format-disconnected": "DSP off",
-    "realtime": true
+
+  "network": {
+    "format-wifi": "",
+    "format-ethernet": "LAN",
+    "format-disconnected": "OFF",
+
+    "tooltip-format": "{ipaddr}",
+
+    "tooltip-format-wifi": "{essid} ({signalStrength}%)\n{ipaddr}",
+
+    "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
+
+    "on-click": "nm-connection-editor"
   },
-  "tray": {
-    "icon-size": 16,
-    "spacing": 10
-  },
-  "upower": {
-    "show-icon": false,
-    "hide-if-empty": true,
-    "tooltip": true,
-    "tooltip-spacing": 20
-  },
-  "custom/powerDraw": {
-    "format": "{}",
-    "interval": 1,
-    "exec": "~/.config/waybar/scripts/powerdraw.sh",
-    "return-type": "json"
+
+  "battery": {
+    "interval": 5,
+
+    "states": {
+      "good": 95,
+      "warning": 30,
+      "critical": 20
+    },
+
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+
+    "format-alt": "{icon} {time}",
+
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
   }
 }
